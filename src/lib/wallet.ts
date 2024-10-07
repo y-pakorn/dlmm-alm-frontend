@@ -1,6 +1,5 @@
 import { Keypair } from "@solana/web3.js";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import * as crypto from "crypto";
 
 const ENCRYPTION_KEY = "your-hard-coded-password"; // Replace with a secure password
 
@@ -10,23 +9,33 @@ export function generatePrivateKey(): string {
   return bs58.encode(keypair.secretKey);
 }
 
+// Simple XOR-based encryption (Note: This is not secure for production use)
+function xorEncrypt(text: string, key: string): string {
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return Buffer.from(result).toString('base64');
+}
+
+// Simple XOR-based decryption
+function xorDecrypt(encryptedText: string, key: string): string {
+  const text = Buffer.from(encryptedText, 'base64').toString();
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return result;
+}
+
 // Encrypt a private key
 export function encryptPrivateKey(privateKey: string): string {
-  const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  let encrypted = cipher.update(privateKey, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return iv.toString('hex') + ':' + encrypted;
+  return xorEncrypt(privateKey, ENCRYPTION_KEY);
 }
 
 // Decrypt an encrypted private key
 export function decryptPrivateKey(encryptedPrivateKey: string): string {
-  const [ivHex, encryptedHex] = encryptedPrivateKey.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  return xorDecrypt(encryptedPrivateKey, ENCRYPTION_KEY);
 }
 
 // Create a Keypair from a private key
