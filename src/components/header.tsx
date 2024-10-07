@@ -1,29 +1,30 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import ThemeSwitcher from "./themeSwitcher";
-import { Loader2 } from "lucide-react";
+import dynamic from "next/dynamic"
+import { Loader2 } from "lucide-react"
+
+import ThemeSwitcher from "./themeSwitcher"
 
 const WalletMultiButtonDynamic = dynamic(
   async () => await import("@/components/walletButton"),
   {
     ssr: false,
     loading: () => (
-      <Loader2 className="animate-spin size-6 self-center mx-14" />
+      <Loader2 className="mx-14 size-6 animate-spin self-center" />
     ),
   }
-);
+)
 
 const Header = () => {
   return (
-    <div className="z-10 w-full max-w-5xl items-center justify-between text-sm lg:flex">
+    <div className="z-10 mb-4 mt-2 w-full items-center justify-between text-sm lg:flex">
       <h1 className="text-xl font-bold">Automated Liquidity Manager</h1>
-      <div className="flex pt-4 lg:pt-0 w-full items-end justify-center gap-4 lg:static lg:size-auto lg:bg-none">
+      <div className="flex w-full items-end justify-center gap-4 pt-4 lg:static lg:size-auto lg:bg-none lg:pt-0">
         <WalletMultiButtonDynamic />
         <ThemeSwitcher />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
