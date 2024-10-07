@@ -4,7 +4,7 @@ import { unstable_cache } from "next/cache"
 import { Pool } from "@/types/pool"
 
 export const ALL_POOLS_URL =
-  "https://app.meteora.ag/amm/pools/search?page=0&size=20000&sort_key=fee_tvl_ratio&order_by=desc"
+  "https://app.meteora.ag/clmm-api/pair/all_with_pagination?page=0&limit=20000&unknown=true&sort_key=feetvlratio&order_by=desc"
 
 export const getRawPools = unstable_cache(
   async () => {
