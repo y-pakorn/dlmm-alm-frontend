@@ -20,7 +20,7 @@ const TokenAvatar = ({
   const token = useToken(address)
 
   return (
-    <Avatar className={cn("size-6", className)}>
+    <Avatar className={cn("aspect-square size-6", className)}>
       <AvatarImage
         src={
           token?.logoURI

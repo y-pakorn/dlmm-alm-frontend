@@ -10,6 +10,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  CircleDollarSign,
+  Coins,
+  Gauge,
 } from "lucide-react"
 import numbro from "numbro"
 import useSWR from "swr/immutable"
@@ -114,40 +117,46 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="grid gap-2 md:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-5">
         {paginatedPools.map((pool) => {
           const perDay = pool.fees_24h / Number(pool.liquidity)
           const perYear = perDay * 365
 
           return (
-            <div key={pool.address} className="rounded-md border p-4">
+            <div key={pool.address} className="space-y-2 rounded-md border p-4">
               <div className="flex items-center gap-2">
-                <div className="flex">
+                <div className="flex -space-x-2">
                   <TokenAvatar address={pool.mint_x} />
                   <TokenAvatar address={pool.mint_y} />
                 </div>
-                <span className="font-bold">{pool.name}</span>
-                <Badge className="rounded-full" variant="secondary">
-                  BIN {pool.bin_step}
-                </Badge>
-                <Badge className="ml-auto rounded-full">
-                  &gt;{numbro(perDay).format("0.00a%")} Per Day
-                </Badge>
+                <span className="truncate font-bold">{pool.name}</span>
               </div>
-              <div className="flex text-sm">
-                <div>
+              <div className="space-y-0.5 text-sm">
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <CircleDollarSign className="size-4" />
                   <span>TVL</span>
-                  <span className="ml-1">
+                  <span className="ml-auto font-semibold text-primary">
                     {numbro(pool.liquidity).format("$0,0.00a")}
                   </span>
                 </div>
-                <div className="ml-auto">
-                  <span>APY</span>
-                  <span className="ml-1">
-                    {numbro(perYear).format("0.00%")}
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <Coins className="size-4" />
+                  <span>Daily %</span>
+                  <span className="ml-auto font-semibold text-green-400">
+                    &gt;{numbro(perDay).format("0,0.00a%")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <Gauge className="size-4" />
+                  <span>Bin Step</span>
+                  <span className="ml-auto font-semibold text-primary">
+                    {numbro(pool.bin_step).format()}
                   </span>
                 </div>
               </div>
+              <Button className="ml-auto w-full" variant="secondary" size="sm">
+                Create Position
+              </Button>
             </div>
           )
         })}
