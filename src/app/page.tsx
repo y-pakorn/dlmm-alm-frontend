@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ALL_POOLS_URL } from "@/services/pool"
 import _ from "lodash"
 import {
@@ -52,6 +52,10 @@ export default function Home() {
     page: 0,
     size: 15,
   })
+
+  useEffect(() => {
+    setPagination((p) => ({ ...p, page: 0 }))
+  }, [filter])
 
   const { paginatedPools, totalPage } = useMemo(
     () => ({
