@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { ALL_POOLS_URL } from "@/services/pool"
+import { getAllUserPositions } from "@/services/position"
+import { useWallet } from "@solana/wallet-adapter-react"
 import _ from "lodash"
 import {
   ChevronLeft,
@@ -70,9 +72,22 @@ export default function Home() {
     [filteredPools, pagination]
   )
 
+  const wallet = useWallet()
+
+  const userPools = useSWR(["userPools", wallet.publicKey], async ([pk]) => {
+    if (!pk) return []
+    return await getAllUserPositions(pk)
+  })
+
   return (
     <main className="container flex min-h-screen flex-col gap-4 py-4">
       <Header />
+      {!!userPools.data?.length && (
+        <>
+          <h1 className="text-2xl font-bold">Your Pools</h1>
+        </>
+      )}
+      <h1 className="text-2xl font-bold">All Pools</h1>
       <div className="flex items-center gap-2">
         <div className="w-96 space-y-1">
           <span className="text-sm">
@@ -116,7 +131,7 @@ export default function Home() {
                   BIN {pool.bin_step}
                 </Badge>
                 <Badge className="ml-auto rounded-full">
-                  {numbro(perDay).format("0.00a%")} Per Day
+                  &gt;{numbro(perDay).format("0.00a%")} Per Day
                 </Badge>
               </div>
               <div className="flex text-sm">
