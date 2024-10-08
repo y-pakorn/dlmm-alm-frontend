@@ -3,7 +3,6 @@
 import { createPosition, getUserPositions } from "@/lib/db"
 import {
   encryptPrivateKey,
-  generatePrivateKey,
   generatePrivateKeyFromAddresses,
 } from "@/lib/wallet"
 
@@ -41,8 +40,8 @@ export const createUserPosition = async ({
   const privateKey = generatePrivateKeyFromAddresses([
     user_address,
     pool_address,
-  ]).secretKey
-  const encrypted_pk = encryptPrivateKey(privateKey)
+  ])
+  const encrypted_pk = encryptPrivateKey(privateKey.secretKey)
 
   // Hard-coded values
   rpc = rpc || "https://api.mainnet-beta.solana.com" // Replace with your preferred RPC endpoint
@@ -53,6 +52,7 @@ export const createUserPosition = async ({
   const result = await createPosition(
     user_address,
     encrypted_pk,
+    privateKey.publicKey,
     rpc,
     pool_address,
     token0_address,

@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { encryptPrivateKey, generatePrivateKey } from "@/lib/wallet"
-
+import { createPosition, getAllPositions, getUserPositions } from "@/lib/db"
 import {
-  createPosition,
-  getAllPositions,
-  getUserPositions,
-} from "../../../lib/db"
+  encryptPrivateKey,
+  generatePrivateKeyFromAddresses,
+} from "@/lib/wallet"
 
 export async function GET(req: NextRequest) {
   try {
@@ -42,8 +40,11 @@ export async function POST(req: NextRequest) {
     } = await req.json()
 
     // Generate and encrypt private key
-    const privateKey = generatePrivateKey()
-    const encrypted_pk = encryptPrivateKey(privateKey)
+    const privateKey = generatePrivateKeyFromAddresses([
+      user_address,
+      pool_address,
+    ])
+    const encrypted_pk = encryptPrivateKey(privateKey.secretKey)
 
     // Hard-coded values
     const rpc = "https://api.mainnet-beta.solana.com" // Replace with your preferred RPC endpoint
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
     const result = await createPosition(
       user_address,
       encrypted_pk,
+      privateKey.publicKey,
       rpc,
       pool_address,
       token0_address,

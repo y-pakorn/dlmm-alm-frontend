@@ -68,3 +68,17 @@ export interface PoolSearch {
   is_meme: boolean
   pool_type: string
 }
+
+export interface UserPool {
+  pool: Pool
+  total_bin_range: number
+  rpc: string
+  rebalance_slippage: number
+  pool_slippage: number
+  rebalance_max_attempts: number
+  add_liquidity_max_attempts: number
+  remove_liquidity_max_attempts: number
+  public_key: string
+  updated_at: Date
+  created_at: Date
+}

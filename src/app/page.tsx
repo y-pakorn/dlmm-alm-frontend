@@ -12,14 +12,18 @@ import {
   ChevronsLeft,
   ChevronsRight,
   CircleDollarSign,
+  Clipboard,
+  Clock,
   Coins,
   Gauge,
+  Loader2,
+  UserRound,
 } from "lucide-react"
 import numbro from "numbro"
 import useSWR from "swr/immutable"
 
-import { Pool } from "@/types/pool"
-import { Badge } from "@/components/ui/badge"
+import { Pool, UserPool } from "@/types/pool"
+import dayjs from "@/lib/dayjs"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
@@ -78,17 +82,85 @@ export default function Home() {
 
   const wallet = useWallet()
 
-  const userPools = useSWR(["userPools", wallet.publicKey], async ([pk]) => {
-    if (!pk) return []
-    return await getAllUserPositions(pk)
-  })
+  const rawUserPools = useSWR(
+    ["userPools", wallet.publicKey],
+    async ([, pk]) => {
+      if (!pk) return []
+      return await getAllUserPositions(pk.toBase58())
+    },
+    {
+      revalidateIfStale: true,
+      revalidateOnMount: true,
+    }
+  )
+
+  const userPools = useMemo(() => {
+    return _.chain(rawUserPools.data || [])
+      .map((up) => {
+        const pool = rawPools.data?.find((p) => p.address === up.pool_address)
+        if (!pool) return
+        return {
+          ...up,
+          pool,
+        } as UserPool
+      })
+      .compact()
+      .value()
+  }, [rawUserPools.data, rawPools.data])
 
   return (
     <main className="container flex min-h-screen flex-col gap-4 py-4">
       <Header />
-      {!!userPools.data?.length && (
+      {userPools.length > 0 && (
         <>
-          <h1 className="text-2xl font-bold">Your Pools</h1>
+          <h1 className="inline-flex items-center gap-2 text-2xl font-bold">
+            Your Pools{" "}
+            {rawUserPools.isValidating && (
+              <Loader2 className="size-4 animate-spin" />
+            )}
+          </h1>
+          <div className="grid gap-2 md:grid-cols-3">
+            {userPools.map((pool) => {
+              return (
+                <div
+                  key={pool.pool.address}
+                  className="space-y-2 rounded-md border p-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      <TokenAvatar address={pool.pool.mint_x} />
+                      <TokenAvatar address={pool.pool.mint_y} />
+                    </div>
+                    <span className="truncate font-bold">{pool.pool.name}</span>
+                  </div>
+                  <div className="space-y-0.5 text-sm">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="size-4" />
+                      <span>Last Updated</span>
+                      <span className="ml-auto font-semibold text-primary">
+                        {dayjs(pool.updated_at).fromNow()}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <UserRound className="size-4" />
+                      <span>Position Addr</span>
+                      <span className="ml-auto inline-flex items-center font-semibold text-primary">
+                        {pool.public_key.slice(0, 6)}...
+                        {pool.public_key.slice(-6)}{" "}
+                        <Clipboard
+                          onClick={() =>
+                            navigator.clipboard.writeText(pool.public_key)
+                          }
+                          className="ml-1 size-3 cursor-pointer"
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </>
       )}
       <h1 className="text-2xl font-bold">All Pools</h1>

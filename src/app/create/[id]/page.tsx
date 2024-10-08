@@ -80,9 +80,9 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
       rpc: data.rpc || undefined,
     })
 
-    toast.success("Position created successfully.")
-    mutate("userPools")
     push("/")
+    toast.success("Position created successfully.")
+    mutate(["userPools", wallet.publicKey])
   })
 
   const mintXBalance = useSWR(
