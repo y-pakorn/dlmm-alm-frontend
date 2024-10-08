@@ -162,7 +162,9 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                   Bin {pool.data?.bin_step}
                 </Badge>
               </h1>
-              <h2 className="text-xl font-bold">Position Settings</h2>
+              <h2 className="text-xl font-bold">
+                Step 1: <span className="font-medium">Position Settings</span>
+              </h2>
               <div className="grid gap-x-8 gap-y-8 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -313,7 +315,10 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                   )}
                 />
               </div>
-              <h2 className="text-xl font-bold">Fund Position Account</h2>
+              <h2 className="text-xl font-bold">
+                Step 2:{" "}
+                <span className="font-medium">Fund Position Account</span>
+              </h2>
               {!poolUserPublicKey.data ? (
                 <div>Connect your wallet to fund your position account.</div>
               ) : (
@@ -322,6 +327,11 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
                     Send {pool.data.name.split("-")[0]} or{" "}
                     {pool.data.name.split("-")[1]} to{" "}
                     <span className="font-mono">{poolUserPublicKey.data}</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    All the funds sent to this address will be used to provide
+                    liquidity to the pool. You can withdraw your funds at any
+                    time.
                   </div>
                   <div className="flex gap-2">
                     <TokenAvatar
