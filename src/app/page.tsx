@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { ALL_POOLS_URL } from "@/services/pool"
 import { getAllUserPositions } from "@/services/position"
 import { useWallet } from "@solana/wallet-adapter-react"
@@ -19,7 +20,7 @@ import useSWR from "swr/immutable"
 
 import { Pool } from "@/types/pool"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import Header from "@/components/header"
@@ -154,9 +155,16 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-              <Button className="ml-auto w-full" variant="secondary" size="sm">
+              <Link
+                className={buttonVariants({
+                  variant: "secondary",
+                  size: "sm",
+                  className: "ml-auto w-full",
+                })}
+                href={`/create/${pool.address}`}
+              >
                 Create Position
-              </Button>
+              </Link>
             </div>
           )
         })}

@@ -1,10 +1,21 @@
 "use server"
 
 import { createPosition, getUserPositions } from "@/lib/db"
-import { encryptPrivateKey, generatePrivateKey } from "@/lib/wallet"
+import {
+  encryptPrivateKey,
+  generatePrivateKey,
+  generatePrivateKeyFromAddresses,
+} from "@/lib/wallet"
 
 export const getAllUserPositions = async (address: string) => {
   return await getUserPositions(address)
+}
+
+export const getPositionPublicKey = async (
+  user_address: string,
+  pool_address: string
+) => {
+  return generatePrivateKeyFromAddresses([user_address, pool_address]).publicKey
 }
 
 export const createUserPosition = async ({
@@ -15,6 +26,7 @@ export const createUserPosition = async ({
   token1_address,
   total_bin_range,
   user_address,
+  rpc,
 }: {
   user_address: string
   pool_address: string
@@ -23,13 +35,17 @@ export const createUserPosition = async ({
   total_bin_range: number
   rebalance_slippage: number
   pool_slippage: number
+  rpc?: string
 }) => {
   // Generate and encrypt private key
-  const privateKey = generatePrivateKey()
+  const privateKey = generatePrivateKeyFromAddresses([
+    user_address,
+    pool_address,
+  ]).secretKey
   const encrypted_pk = encryptPrivateKey(privateKey)
 
   // Hard-coded values
-  const rpc = "https://api.mainnet-beta.solana.com" // Replace with your preferred RPC endpoint
+  rpc = rpc || "https://api.mainnet-beta.solana.com" // Replace with your preferred RPC endpoint
   const rebalance_max_attempts = 3
   const add_liquidity_max_attempts = 3
   const remove_liquidity_max_attempts = 3

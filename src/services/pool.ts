@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache"
 
 import { Pool } from "@/types/pool"
 
+export const POOL_URL = "https://app.meteora.ag/clmm-api/pair"
 export const ALL_POOLS_URL =
   "https://app.meteora.ag/clmm-api/pair/all_with_pagination?page=0&limit=20000&unknown=true&sort_key=feetvlratio&order_by=desc"
 

@@ -1,6 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import Link from "next/link"
 import { Loader2 } from "lucide-react"
 
 import ThemeSwitcher from "./themeSwitcher"
@@ -18,7 +19,9 @@ const WalletMultiButtonDynamic = dynamic(
 const Header = () => {
   return (
     <div className="z-10 mb-4 mt-2 w-full items-center justify-between text-sm lg:flex">
-      <h1 className="text-xl font-bold">Automated Liquidity Manager</h1>
+      <Link href="/">
+        <h1 className="text-xl font-bold">Automated Liquidity Manager</h1>
+      </Link>
       <div className="flex w-full items-end justify-center gap-4 pt-4 lg:static lg:size-auto lg:bg-none lg:pt-0">
         <WalletMultiButtonDynamic />
         <ThemeSwitcher />
